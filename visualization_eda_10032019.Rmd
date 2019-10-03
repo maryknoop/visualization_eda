@@ -111,5 +111,47 @@ weather_df %>%
 
 ```
 
+#creates a nicely formed table using knitr file 
+```{r}
+weather_df %>%
+  group_by(name, month) %>%
+  summarize(mean_tmax = mean(tmax)) %>% 
+  pivot_wider(
+    names_from = name,
+    values_from = mean_tmax) %>% 
+  knitr::kable(digits = 1)
+```
+
+##group mutates
+
+```{r}
+weather_df %>%
+  group_by(name) %>%
+  ungroup()
+```
+
+#mutate within the groups, create new variale that is the mean tmax
+```{r}
+weather_df %>%
+  group_by(name) %>%
+  mutate(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    centered_tmax = tmax - mean(tmax)) %>% 
+  ggplot(aes(x = date, y = centered_tmax, color = name)) + 
+    geom_point() 
+
+```
+
+#window functions in grouped mutates
+#adds new variable for the tmax rank that ranks the tmax values from highest to lowest or lowest to highest
+```{r}
+weather_df %>%
+  group_by(name, month) %>%
+  mutate(
+    tmax_rank = min_rank(tmax)
+    ) %>%
+  filter(tmax_rank == 1)
+
+```
 
 
