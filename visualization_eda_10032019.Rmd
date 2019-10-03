@@ -64,3 +64,52 @@ weather_df %>%
   count(month, name = "n_days")
 ```
 
+
+#2x2 tables
+```{r}
+#exposure is either Central Park or Waterhold therefore make expsoure not Waikiki , outome is cold or not cold
+#case when helps to make new variable
+#true "" command gives you a blank spot 
+#janitor command allows it to 
+weather_df %>% 
+    filter(name != "Waikiki_HA") %>% 
+  mutate(
+    cold = case_when(
+      tmax < 5 ~ "cold",
+      tmax >=5 ~ "not_cold",
+      TRUE     ~ ""
+  )) %>% 
+ janitor::tabyl(name, cold)
+
+```
+
+#na.rm = TRUE takes the NA out of the dataset so a mean or median can be computed correctly
+```{r}
+weather_df %>%
+  group_by(name) %>%
+  summarize(
+    n = n(),
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    sd_tmax = sd(tmax),
+    median_prcp = median(prcp, na.rm = TRUE))
+
+```
+
+
+```{r}
+weather_df %>%
+  group_by(name, month) %>%
+  summarize(
+    n = n(),
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    sd_tmax = sd(tmax),
+    median_prcp = median(prcp, na.rm = TRUE)
+    )%>%
+  ggplot(aes(x = month, y = mean_tmax, color = name)) +
+    geom_point() + geom_line() + 
+    theme(legend.position = "bottom")
+
+```
+
+
+
